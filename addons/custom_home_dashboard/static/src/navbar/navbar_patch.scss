@@ -5,15 +5,56 @@
     text-decoration: none;
 
     .o_menu_toggle_icon {
-        font-size: 18px;
+        font-size: 20px;
         line-height: 1;
     }
 
+    // The app icon and the grid icon both live in the DOM at all times, stacked in
+    // the same slot -- never conditionally added/removed on hover, so hovering can
+    // never cause a remount under the cursor (that was the cause of the flicker).
+    // Only their opacity crossfades. The app NAME text sits outside this slot
+    // entirely and is never touched by hover -- it stays visible throughout.
+    .o_menu_toggle_swap {
+        .o_menu_toggle_icon_slot {
+            width: 28px;
+            height: 28px;
+            flex: 0 0 auto;
+        }
+
+        .o_menu_brand_icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 1;
+            transition: opacity 0.12s ease;
+        }
+
+        .o_menu_toggle_icon_hover {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.12s ease;
+        }
+
+        &:hover {
+            .o_menu_brand_icon {
+                opacity: 0;
+            }
+
+            .o_menu_toggle_icon_hover {
+                opacity: 1;
+            }
+        }
+    }
+
     .o_menu_brand_icon {
-        width: 24px;
-        height: 24px;
-        object-fit: cover;
-        border-radius: 4px;
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        border-radius: 6px;
         flex: 0 0 auto;
     }
 

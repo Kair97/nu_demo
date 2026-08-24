@@ -10,6 +10,5 @@ patch(NavBar.prototype, {
         super.setup();
         this.homeMenu = useService("home_menu");
         this.hm = useState(this.homeMenu.state);
-        this.toggleHover = useState({ value: false });
     },
 });

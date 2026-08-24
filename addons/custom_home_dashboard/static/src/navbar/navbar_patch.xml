@@ -13,17 +13,19 @@
             <a href="#"
                class="o_menu_toggle d-flex align-items-center px-2"
                title="Home Menu"
-               t-on-click.prevent="() => this.homeMenu.toggle()"
-               t-on-mouseenter="() => this.toggleHover.value = true"
-               t-on-mouseleave="() => this.toggleHover.value = false">
-                <i t-if="env.isSmall or !currentApp or hm.hasHomeMenu or toggleHover.value"
-                   class="oi oi-apps o_menu_toggle_icon"/>
-                <t t-if="!env.isSmall and currentApp and !hm.hasHomeMenu and !toggleHover.value">
-                    <span class="o_menu_brand_wrap d-flex align-items-center">
-                        <img t-if="currentApp.webIconData"
-                             t-att-src="currentApp.webIconData"
-                             class="o_menu_brand_icon"
-                             t-att-alt="currentApp.name"/>
+               t-on-click.prevent="() => this.homeMenu.toggle()">
+                <t t-if="env.isSmall or !currentApp or hm.hasHomeMenu">
+                    <i class="oi oi-apps o_menu_toggle_icon"/>
+                </t>
+                <t t-else="">
+                    <span class="o_menu_toggle_swap d-flex align-items-center">
+                        <span class="o_menu_toggle_icon_slot position-relative">
+                            <img t-if="currentApp.webIconData"
+                                 t-att-src="currentApp.webIconData"
+                                 class="o_menu_brand_icon"
+                                 t-att-alt="currentApp.name"/>
+                            <i class="oi oi-apps o_menu_toggle_icon o_menu_toggle_icon_hover"/>
+                        </span>
                         <span class="o_menu_brand ms-2" t-esc="currentApp.name"/>
                     </span>
                 </t>
