@@ -65,6 +65,55 @@ it** — that removes the code but leaves every record it created sitting in the
 database, untouched. Uninstall through the Apps screen first; only delete the folder
 afterward if you want to.
 
+## Handing this off to a teammate (getting them your *exact* current state)
+
+**Cloning the GitHub repo alone is not enough.** It gets them the code, but not:
+- `.env` / `config/odoo.conf` (gitignored on purpose — a fresh clone has none)
+- The actual database (all the demo data, the SMTP config, the CRM default-pipeline
+  fix, the deleted default stages, the current `admin` password) — none of that is
+  in git, all of it only exists in the Postgres volume on whichever machine is
+  currently running it.
+
+A fresh `docker compose up` from just the git clone gives an **empty** Odoo, not a
+continuation of this one. To actually hand off the current running state:
+
+1. **Generate a backup pair** (already done as of this writing —
+   `backups/handoff_nu_demo_*.dump` + `backups/handoff_filestore_nu_demo_*.tar.gz`).
+   Re-run this any time to get a fresher one:
+   ```
+   docker compose exec backup sh -c '
+     ts=$(date +%Y%m%d_%H%M%S)
+     pg_dump -Fc "$PGDATABASE" > "/backups/handoff_${PGDATABASE}_${ts}.dump"
+     tar -C /var/lib/odoo/.local/share/Odoo -czf "/backups/handoff_filestore_${PGDATABASE}_${ts}.tar.gz" "filestore/${PGDATABASE}"
+   '
+   ```
+2. **Send the teammate two things, separately:**
+   - The GitHub repo link (`https://github.com/Kair97/nu_demo`) — public code, fine
+     to just share.
+   - The two `handoff_*` files from `backups/` — send these directly (Slack DM,
+     Drive link, USB, whatever you'd trust with an internal file), **not** through
+     git. ⚠️ The database dump contains the real Gmail app password (Odoo stores
+     `ir.mail_server` credentials in the database, not encrypted at rest) — treat
+     these files with the same care as any other credential.
+3. **Teammate's setup**, after installing Docker Desktop and cloning the repo:
+   ```
+   cp .env.example .env                            # can use fresh secrets, doesn't need to match yours
+   cp config/odoo.conf.example config/odoo.conf     # same — fresh admin_passwd is fine
+   docker compose up -d
+   ```
+   Wait for it to be healthy (`docker compose ps`), then restore your data into it:
+   ```
+   docker compose cp backups/handoff_nu_demo_<timestamp>.dump db:/tmp/restore.dump
+   docker compose exec db pg_restore -U odoo -d postgres --create --clean /tmp/restore.dump
+
+   docker compose cp backups/handoff_filestore_nu_demo_<timestamp>.tar.gz odoo:/tmp/filestore.tar.gz
+   docker compose exec odoo sh -c "tar -xzf /tmp/filestore.tar.gz -C /var/lib/odoo/.local/share/Odoo"
+
+   docker compose restart odoo
+   ```
+4. **Login** once restored: `admin` / `NuDemo2026!` at `http://localhost:8069`
+   (their own machine now has the exact same data, config, and fixes as this one).
+
 ## Deploying to the team's server
 
 1. Clone this repo to the server (`git clone https://github.com/Kair97/nu_demo.git`).
