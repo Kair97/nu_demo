@@ -4,15 +4,29 @@ import { registry } from "@web/core/registry";
 import { reactive } from "@odoo/owl";
 
 export const homeMenuService = {
-    start() {
+    dependencies: ["title"],
+    start(env, { title }) {
         const state = reactive({ hasHomeMenu: false });
+        let savedActionTitle = null;
+
         return {
             state,
             get hasHomeMenu() {
                 return state.hasHomeMenu;
             },
             toggle(show) {
-                state.hasHomeMenu = show === undefined ? !state.hasHomeMenu : show;
+                const next = show === undefined ? !state.hasHomeMenu : show;
+                if (next === state.hasHomeMenu) {
+                    return;
+                }
+                state.hasHomeMenu = next;
+                if (next) {
+                    savedActionTitle = title.getParts().action;
+                    title.setParts({ action: "Home" });
+                } else {
+                    title.setParts({ action: savedActionTitle });
+                    savedActionTitle = null;
+                }
             },
         };
     },
