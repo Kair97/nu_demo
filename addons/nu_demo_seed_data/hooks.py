@@ -48,6 +48,7 @@ def post_init_hook(env):
     _seed_tasks(env, projects, task_stages, partners, users)
     _seed_calendar_events(env, partners)
     _seed_surveys(env)
+    _seed_public_events(env)
 
     _logger.info("nu_demo_seed_data: done")
 
@@ -652,3 +653,30 @@ def _seed_surveys(env):
                 except Exception:
                     _logger.warning("nu_demo_seed_data: could not set answer options for %s", qtitle)
             _ref(env, f'{key}_q{i}', 'survey.question', q_vals)
+
+
+# ---------------------------------------------------------------------------
+# Public events (event.event) — reuses names already established via CRM
+# leads / calendar events, so the same story shows up consistently across apps.
+# Requires the 'event' app; not declared as a hard manifest dependency since
+# it's optional polish, not core to the dataset — guarded with a try/except.
+# ---------------------------------------------------------------------------
+
+EVENTS_APP = [
+    ('event_career_fair', 'Career Fair NU 2026', '2026-09-12 10:00:00', '2026-09-12 18:00:00', 'Booked'),
+    ('event_industry_day', 'Industry Day 2026 совместно с ERG', '2026-09-15 09:00:00', '2026-09-15 17:00:00', 'Announced'),
+    ('event_startup_weekend', 'Startup Weekend NU', '2026-11-01 13:00:00', '2026-11-03 18:00:00', 'New'),
+]
+
+
+def _seed_public_events(env):
+    if 'event.event' not in env:
+        return
+    stages = {s.name: s.id for s in env['event.stage'].search([])}
+    for key, name, date_begin, date_end, stage_name in EVENTS_APP:
+        _ref(env, key, 'event.event', {
+            'name': name,
+            'date_begin': date_begin,
+            'date_end': date_end,
+            'stage_id': stages.get(stage_name),
+        })
