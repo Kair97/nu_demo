@@ -2,11 +2,13 @@
 
 import { patch } from "@web/core/utils/patch";
 import { NavBar } from "@web/webclient/navbar/navbar";
+import { useService } from "@web/core/utils/hooks";
+import { useState } from "@odoo/owl";
 
 patch(NavBar.prototype, {
-    goToDashboard() {
-        this.actionService.doAction("custom_home_dashboard.action_custom_home_dashboard", {
-            clearBreadcrumbs: true,
-        });
+    setup() {
+        super.setup();
+        this.homeMenu = useService("home_menu");
+        this.hm = useState(this.homeMenu.state);
     },
 });

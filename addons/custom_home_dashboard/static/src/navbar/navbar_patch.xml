@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-inherit="web.NavBar" t-inherit-mode="extension">
-        <xpath expr="//DropdownItem[@t-esc='currentApp.name']" position="attributes">
-            <attribute name="onSelected">() => this.goToDashboard()</attribute>
+        <xpath expr="//t[@t-call='web.NavBar.AppsMenu']" position="replace">
+            <a href="#"
+               class="o_menu_toggle d-flex align-items-center position-relative px-2"
+               title="Home Menu"
+               t-on-click.prevent="() => this.homeMenu.toggle()">
+                <i class="oi oi-apps"/>
+                <t t-if="!env.isSmall and currentApp and !hm.hasHomeMenu">
+                    <img t-if="currentApp.webIconData"
+                         t-att-src="currentApp.webIconData"
+                         class="o_menu_brand_icon ms-2"
+                         style="height: 24px; border-radius: 4px;"
+                         t-att-alt="currentApp.name"/>
+                    <span class="o_menu_brand ms-2" t-esc="currentApp.name"/>
+                </t>
+            </a>
         </xpath>
+        <xpath expr="//DropdownItem[@t-esc='currentApp.name']" position="replace"/>
     </t>
 </templates>

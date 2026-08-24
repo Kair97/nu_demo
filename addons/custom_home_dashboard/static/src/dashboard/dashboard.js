@@ -11,6 +11,7 @@ export class CustomHomeDashboard extends Component {
 
     setup() {
         this.menuService = useService("menu");
+        this.homeMenu = useService("home_menu");
         this.searchRef = useRef("search");
         this.state = useState({ query: "" });
         this.allApps = this.menuService.getApps().filter((app) => app.xmlid !== SELF_XMLID);
@@ -27,6 +28,7 @@ export class CustomHomeDashboard extends Component {
 
     openApp(app) {
         this.menuService.selectMenu(app);
+        this.homeMenu.toggle(false);
     }
 
     onTileKeydown(ev, app) {
