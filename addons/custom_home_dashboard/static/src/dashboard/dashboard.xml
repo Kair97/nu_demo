@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="custom_home_dashboard.Dashboard" owl="1">
+        <div class="o_custom_home_dashboard">
+            <div class="o_custom_home_dashboard_container">
+                <div class="o_custom_home_dashboard_search">
+                    <i class="fa fa-search"/>
+                    <input t-ref="search"
+                           type="text"
+                           placeholder="Search apps..."
+                           t-att-value="state.query"
+                           t-on-input="onSearchInput"
+                           t-on-keydown="onSearchKeydown"/>
+                </div>
+                <div class="o_custom_home_dashboard_grid" t-if="apps.length">
+                    <t t-foreach="apps" t-as="app" t-key="app.id">
+                        <div class="o_custom_home_dashboard_tile"
+                             role="button"
+                             tabindex="0"
+                             t-on-click="() => this.openApp(app)"
+                             t-on-keydown="(ev) => this.onTileKeydown(ev, app)">
+                            <div class="o_custom_home_dashboard_icon">
+                                <img t-if="app.webIconData" t-att-src="app.webIconData" alt=""/>
+                            </div>
+                            <span t-esc="app.name"/>
+                        </div>
+                    </t>
+                </div>
+                <div class="o_custom_home_dashboard_empty" t-else="">
+                    No apps match "<t t-esc="state.query"/>"
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

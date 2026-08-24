@@ -1,0 +1,8 @@
+.env
+*.log
+config/odoo.conf
+nginx/certs/
+backups/
+_scratch/
+__pycache__/
+*.pyc

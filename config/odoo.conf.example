@@ -1,0 +1,8 @@
+[options]
+addons_path = /mnt/extra-addons
+admin_passwd = changeme-generate-a-strong-random-value
+list_db = False
+dbfilter = ^nu_demo$
+workers = 2
+max_cron_threads = 1
+proxy_mode = True
