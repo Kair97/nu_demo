@@ -1,22 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-inherit="web.NavBar" t-inherit-mode="extension">
+        <xpath expr="//header[hasclass('o_navbar')]" position="attributes">
+            <attribute name="t-att-class">{ 'o_home_menu_active': hm.hasHomeMenu }</attribute>
+        </xpath>
+
+        <xpath expr="//nav[hasclass('o_main_navbar')]" position="attributes">
+            <attribute name="t-att-class">{ 'o_home_menu_active': hm.hasHomeMenu }</attribute>
+        </xpath>
+
         <xpath expr="//t[@t-call='web.NavBar.AppsMenu']" position="replace">
             <a href="#"
-               class="o_menu_toggle d-flex align-items-center position-relative px-2"
+               class="o_menu_toggle d-flex align-items-center px-2"
                title="Home Menu"
-               t-on-click.prevent="() => this.homeMenu.toggle()">
-                <i class="oi oi-apps"/>
-                <t t-if="!env.isSmall and currentApp and !hm.hasHomeMenu">
-                    <img t-if="currentApp.webIconData"
-                         t-att-src="currentApp.webIconData"
-                         class="o_menu_brand_icon ms-2"
-                         style="height: 24px; border-radius: 4px;"
-                         t-att-alt="currentApp.name"/>
-                    <span class="o_menu_brand ms-2" t-esc="currentApp.name"/>
+               t-on-click.prevent="() => this.homeMenu.toggle()"
+               t-on-mouseenter="() => this.toggleHover.value = true"
+               t-on-mouseleave="() => this.toggleHover.value = false">
+                <i t-if="env.isSmall or !currentApp or hm.hasHomeMenu or toggleHover.value"
+                   class="oi oi-apps o_menu_toggle_icon"/>
+                <t t-if="!env.isSmall and currentApp and !hm.hasHomeMenu and !toggleHover.value">
+                    <span class="o_menu_brand_wrap d-flex align-items-center">
+                        <img t-if="currentApp.webIconData"
+                             t-att-src="currentApp.webIconData"
+                             class="o_menu_brand_icon"
+                             t-att-alt="currentApp.name"/>
+                        <span class="o_menu_brand ms-2" t-esc="currentApp.name"/>
+                    </span>
                 </t>
             </a>
         </xpath>
+
         <xpath expr="//DropdownItem[@t-esc='currentApp.name']" position="replace"/>
+
+        <xpath expr="//div[hasclass('o_navbar_breadcrumbs')]" position="attributes">
+            <attribute name="t-if">!hm.hasHomeMenu</attribute>
+        </xpath>
+
+        <xpath expr="//t[@t-if='currentAppSections.length']" position="attributes">
+            <attribute name="t-if">currentAppSections.length and !hm.hasHomeMenu</attribute>
+        </xpath>
     </t>
 </templates>

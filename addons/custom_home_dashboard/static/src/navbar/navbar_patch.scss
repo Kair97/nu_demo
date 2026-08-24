@@ -1,0 +1,43 @@
+.o_menu_toggle {
+    min-width: 46px;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+
+    .o_menu_toggle_icon {
+        font-size: 18px;
+        line-height: 1;
+    }
+
+    .o_menu_brand_icon {
+        width: 24px;
+        height: 24px;
+        object-fit: cover;
+        border-radius: 4px;
+        flex: 0 0 auto;
+    }
+
+    .o_menu_brand {
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &:hover {
+        color: inherit;
+        text-decoration: none;
+    }
+}
+
+.o_navbar.o_home_menu_active,
+.o_main_navbar.o_home_menu_active {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.o_main_navbar.o_home_menu_active {
+    position: relative;
+    z-index: 1051;
+}

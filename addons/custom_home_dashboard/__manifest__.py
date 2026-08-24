@@ -15,6 +15,7 @@
             'custom_home_dashboard/static/src/dashboard/dashboard.xml',
             'custom_home_dashboard/static/src/navbar/navbar_patch.js',
             'custom_home_dashboard/static/src/navbar/navbar_patch.xml',
+            'custom_home_dashboard/static/src/navbar/navbar_patch.scss',
             'custom_home_dashboard/static/src/home_menu/home_menu_overlay.js',
             'custom_home_dashboard/static/src/home_menu/home_menu_overlay.xml',
             'custom_home_dashboard/static/src/home_menu/home_menu_overlay.scss',
