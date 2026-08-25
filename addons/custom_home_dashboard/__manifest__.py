@@ -1,28 +1,33 @@
 {
     'name': 'Custom Home Dashboard',
-    'version': '1.0',
-    'summary': 'Custom landing dashboard for nu_demo, shown instead of the default app grid',
+    'version': '2.0',
+    'summary': 'Enterprise-style Home Menu (app grid) for Odoo Community',
     'category': 'Productivity',
+    'author': 'Nazarbayev University — Industry Engagement Office',
     'depends': ['web'],
-    'data': [
-        'views/dashboard_menu.xml',
-    ],
+    'data': [],
     'assets': {
         'web.assets_backend': [
-            'custom_home_dashboard/static/src/home_menu/home_menu_service.js',
             'custom_home_dashboard/static/src/dashboard/dashboard.scss',
             'custom_home_dashboard/static/src/dashboard/dashboard.js',
             'custom_home_dashboard/static/src/dashboard/dashboard.xml',
+            'custom_home_dashboard/static/src/home_menu/home_menu_service.js',
+            'custom_home_dashboard/static/src/home_menu/webclient_patch.js',
             'custom_home_dashboard/static/src/navbar/navbar_patch.js',
             'custom_home_dashboard/static/src/navbar/navbar_patch.xml',
             'custom_home_dashboard/static/src/navbar/navbar_patch.scss',
-            'custom_home_dashboard/static/src/home_menu/home_menu_overlay.js',
-            'custom_home_dashboard/static/src/home_menu/home_menu_overlay.xml',
-            'custom_home_dashboard/static/src/home_menu/home_menu_overlay.scss',
         ],
     },
-    'post_init_hook': 'post_init_hook',
     'installable': True,
-    'application': True,
+    'application': False,
     'license': 'LGPL-3',
+    'description': """
+Brings Odoo Enterprise's Home Menu experience to Community: a searchable grid of
+app icons on a full-screen dark background, toggled from the navbar.
+
+Implemented the same way Enterprise does it -- as a real client action registered
+under the tag "menu" -- rather than as a floating overlay. That tag is
+special-cased by Odoo's router, so the URL becomes a bare "/odoo", refreshing
+keeps you on the home menu, and browser back/forward work normally.
+""",
 }

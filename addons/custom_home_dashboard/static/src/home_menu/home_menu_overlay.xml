@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<templates xml:space="preserve">
-    <t t-name="custom_home_dashboard.HomeMenuOverlay" owl="1">
-        <div t-if="hm.hasHomeMenu" class="o_home_menu_overlay">
-            <CustomHomeDashboard/>
-        </div>
-    </t>
-</templates>

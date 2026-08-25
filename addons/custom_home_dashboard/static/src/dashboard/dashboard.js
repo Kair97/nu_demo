@@ -1,20 +1,17 @@
 /** @odoo-module **/
 
-import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { Component, useState, useRef, onMounted } from "@odoo/owl";
 
-const SELF_XMLID = "custom_home_dashboard.menu_custom_home_dashboard_root";
-
 export class CustomHomeDashboard extends Component {
     static template = "custom_home_dashboard.Dashboard";
+    static props = {};
 
     setup() {
         this.menuService = useService("menu");
-        this.homeMenu = useService("home_menu");
         this.searchRef = useRef("search");
         this.state = useState({ query: "" });
-        this.allApps = this.menuService.getApps().filter((app) => app.xmlid !== SELF_XMLID);
+        this.allApps = this.menuService.getApps();
         onMounted(() => this.searchRef.el?.focus());
     }
 
@@ -27,8 +24,9 @@ export class CustomHomeDashboard extends Component {
     }
 
     openApp(app) {
+        // selectMenu runs its own doAction, which unmounts the home-menu action
+        // and flips hasHomeMenu back to false on its own -- no manual toggle.
         this.menuService.selectMenu(app);
-        this.homeMenu.toggle(false);
     }
 
     onTileKeydown(ev, app) {
@@ -49,5 +47,3 @@ export class CustomHomeDashboard extends Component {
         }
     }
 }
-
-registry.category("actions").add("custom_home_dashboard.dashboard", CustomHomeDashboard);
