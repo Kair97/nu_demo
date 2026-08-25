@@ -355,6 +355,16 @@ def _seed_crm_teams(env, users):
     return teams
 
 
+# Terminal stages: reaching one of these means the cooperation actually
+# happened, which is what makes a deal count as "реализуемая" rather than
+# merely "потенциальная". Without is_won every pipeline reads as 0% realised.
+WON_STAGE_NAMES = {
+    'Контракт подписан', 'Программа продана', 'Спонсорство оформлено',
+    'Программа завершена', 'Сдано', 'Проведено', 'Подписано',
+    'Участие оформлено',
+}
+
+
 def _seed_crm_stages(env, teams):
     stages = {}
     for team_key, names in STAGES_BY_TEAM.items():
@@ -364,6 +374,7 @@ def _seed_crm_stages(env, teams):
                 'name': name,
                 'sequence': (i + 1) * 10,
                 'team_ids': [(6, 0, [teams[team_key].id])],
+                'is_won': name in WON_STAGE_NAMES,
             })
             stages[team_key][name] = stage
     return stages
