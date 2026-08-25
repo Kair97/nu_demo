@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Every internal user inherits Odoo's stock "Sales / User: All Documents"
+        group, so opening a partner company shows the complete cooperation
+        history rather than only the records that user personally owns.
+        Rationale is documented in this module's manifest description.
+    -->
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+    </record>
+
+</odoo>

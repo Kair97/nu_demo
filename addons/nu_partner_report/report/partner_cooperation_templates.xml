@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="report_partner_cooperation_document">
+    <t t-set="data" t-value="doc.get_cooperation_report_data()"/>
+    <t t-set="partner" t-value="data['partner']"/>
+    <t t-set="currency" t-value="data['currency']"/>
+    <t t-set="company" t-value="data['company']"/>
+
+    <t t-call="web.external_layout">
+        <div class="page">
+            <style>
+                .nu-h1 { font-size: 20px; font-weight: 700; color: #1b2a4a; margin: 0; }
+                .nu-sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
+                .nu-sec { font-size: 13px; font-weight: 700; color: #1b2a4a;
+                          border-bottom: 2px solid #1b2a4a; padding-bottom: 3px;
+                          margin: 18px 0 8px 0; text-transform: uppercase;
+                          letter-spacing: .4px; }
+                .nu-sub-sec { font-size: 12px; font-weight: 700; color: #26456e;
+                              margin: 12px 0 4px 0; }
+                .nu-kpi { border: 1px solid #dfe3e8; border-radius: 4px;
+                          padding: 8px 6px; text-align: center; }
+                .nu-kpi-val { font-size: 15px; font-weight: 700; color: #1b2a4a;
+                              line-height: 1.2; }
+                .nu-kpi-lbl { font-size: 8.5px; color: #6b7280; text-transform: uppercase;
+                              letter-spacing: .3px; }
+                .nu-tbl { width: 100%; border-collapse: collapse; font-size: 9.5px; }
+                .nu-tbl th { background: #eef1f6; color: #1b2a4a; font-weight: 700;
+                             text-align: left; padding: 5px 6px;
+                             border-bottom: 1px solid #c9d2e0; }
+                .nu-tbl td { padding: 5px 6px; border-bottom: 1px solid #eceff3;
+                             vertical-align: top; }
+                .nu-tbl tr:last-child td { border-bottom: none; }
+                .nu-chip { display: inline-block; background: #eef1f6; color: #26456e;
+                           border-radius: 9px; padding: 1px 8px; font-size: 8.5px;
+                           margin: 0 3px 3px 0; }
+                .nu-sub-task { color: #6b7280; }
+                .nu-muted { color: #6b7280; }
+                .nu-right { text-align: right; }
+                .nu-total-row td { background: #f7f9fc; font-weight: 700;
+                                   border-top: 1px solid #c9d2e0; }
+                .nu-empty { font-size: 10px; color: #9aa3af; font-style: italic;
+                            padding: 4px 0; }
+            </style>
+
+            <!-- ============ TITLE ============ -->
+            <div class="row">
+                <div class="col-8">
+                    <p class="nu-h1"><span t-field="partner.name"/></p>
+                    <p class="nu-sub">
+                        Отчёт о сотрудничестве / Cooperation Report
+                    </p>
+                </div>
+                <div class="col-4 nu-right">
+                    <p class="nu-sub" style="margin-top: 4px;">
+                        Дата формирования / Generated<br/>
+                        <strong t-esc="context_timestamp(datetime.datetime.now()).strftime('%d.%m.%Y %H:%M')"/>
+                    </p>
+                </div>
+            </div>
+
+            <!-- ============ COMPANY PROFILE ============ -->
+            <div class="nu-sec">Профиль компании / Company profile</div>
+            <div class="row">
+                <div class="col-6">
+                    <table class="nu-tbl">
+                        <tr t-if="partner.country_id">
+                            <td class="nu-muted" style="width: 38%;">Страна / Country</td>
+                            <td><span t-field="partner.country_id.name"/></td>
+                        </tr>
+                        <tr t-if="partner.city">
+                            <td class="nu-muted">Город / City</td>
+                            <td><span t-field="partner.city"/></td>
+                        </tr>
+                        <tr t-if="partner.street">
+                            <td class="nu-muted">Адрес / Address</td>
+                            <td><span t-field="partner.street"/></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-6">
+                    <table class="nu-tbl">
+                        <tr t-if="partner.phone">
+                            <td class="nu-muted" style="width: 38%;">Телефон / Phone</td>
+                            <td><span t-field="partner.phone"/></td>
+                        </tr>
+                        <tr t-if="partner.email">
+                            <td class="nu-muted">Email</td>
+                            <td><span t-field="partner.email"/></td>
+                        </tr>
+                        <tr t-if="partner.website">
+                            <td class="nu-muted">Сайт / Website</td>
+                            <td><span t-field="partner.website"/></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============ KPI SUMMARY ============ -->
+            <div class="nu-sec">Сводка / Summary</div>
+            <div class="row">
+                <div class="col-2"><div class="nu-kpi">
+                    <div class="nu-kpi-val" t-esc="len(data['opportunities'])"/>
+                    <div class="nu-kpi-lbl">Сделок<br/>Opportunities</div>
+                </div></div>
+                <div class="col-3"><div class="nu-kpi">
+                    <div class="nu-kpi-val">
+                        <span t-esc="data['total_revenue']"
+                              t-options='{"widget": "monetary", "display_currency": currency}'/>
+                    </div>
+                    <div class="nu-kpi-lbl">Общая сумма<br/>Total value</div>
+                </div></div>
+                <div class="col-3"><div class="nu-kpi">
+                    <div class="nu-kpi-val">
+                        <span t-esc="data['won_revenue']"
+                              t-options='{"widget": "monetary", "display_currency": currency}'/>
+                    </div>
+                    <div class="nu-kpi-lbl">Реализовано (<t t-esc="data['won_count']"/>)<br/>Won</div>
+                </div></div>
+                <div class="col-2"><div class="nu-kpi">
+                    <div class="nu-kpi-val" t-esc="len(data['projects'])"/>
+                    <div class="nu-kpi-lbl">Проектов<br/>Projects</div>
+                </div></div>
+                <div class="col-2"><div class="nu-kpi">
+                    <div class="nu-kpi-val" t-esc="len(data['events'])"/>
+                    <div class="nu-kpi-lbl">Встреч<br/>Meetings</div>
+                </div></div>
+            </div>
+
+            <div t-if="data['tags']" style="margin-top: 10px;">
+                <span class="nu-muted" style="font-size: 9.5px;">Форматы взаимодействия / Cooperation formats:</span><br/>
+                <t t-foreach="data['tags']" t-as="tag">
+                    <span class="nu-chip"><span t-field="tag.name"/></span>
+                </t>
+            </div>
+
+            <!-- ============ CONTACT PERSONS ============ -->
+            <div class="nu-sec">Контактные лица / Contact persons</div>
+            <table class="nu-tbl" t-if="data['contacts']">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Имя / Name</th>
+                        <th style="width: 30%;">Должность / Position</th>
+                        <th style="width: 22%;">Email</th>
+                        <th style="width: 18%;">Телефон / Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="data['contacts']" t-as="contact">
+                        <td><strong t-field="contact.name"/></td>
+                        <td><span t-field="contact.function"/></td>
+                        <td><span t-field="contact.email"/></td>
+                        <td><span t-field="contact.phone"/></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div t-else="" class="nu-empty">Контактные лица не зарегистрированы / No contact persons on record.</div>
+
+            <!-- ============ NU STAFF INVOLVED ============ -->
+            <div class="nu-sec">Сотрудники NU / University staff involved</div>
+            <div t-if="data['staff']">
+                <t t-foreach="data['staff']" t-as="person">
+                    <span class="nu-chip"><span t-field="person.name"/></span>
+                </t>
+            </div>
+            <div t-else="" class="nu-empty">Ответственные не назначены / No staff assigned yet.</div>
+
+            <!-- ============ OPPORTUNITIES BY DIRECTION ============ -->
+            <div class="nu-sec">Проекты и сделки по направлениям / Cooperation by direction</div>
+            <t t-if="data['opportunity_groups']">
+                <t t-foreach="data['opportunity_groups']" t-as="group">
+                    <div class="nu-sub-sec">
+                        <span t-if="group['team']" t-field="group['team'].name"/>
+                        <span t-else="">Без направления / Unassigned</span>
+                    </div>
+                    <table class="nu-tbl">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%;">Наименование / Name</th>
+                                <th style="width: 18%;">Этап / Stage</th>
+                                <th style="width: 16%;">Ответственный / Owner</th>
+                                <th style="width: 8%;" class="nu-right">Вер. / Prob.</th>
+                                <th style="width: 18%;" class="nu-right">Сумма / Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="group['opportunities']" t-as="opp">
+                                <td>
+                                    <span t-field="opp.name"/>
+                                    <t t-if="opp.tag_ids">
+                                        <br/>
+                                        <t t-foreach="opp.tag_ids" t-as="otag">
+                                            <span class="nu-chip"><span t-field="otag.name"/></span>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td><span t-field="opp.stage_id.name"/></td>
+                                <td><span t-field="opp.user_id.name"/></td>
+                                <td class="nu-right"><span t-esc="int(opp.probability)"/>%</td>
+                                <td class="nu-right">
+                                    <span t-esc="opp.expected_revenue"
+                                          t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                </td>
+                            </tr>
+                            <tr class="nu-total-row">
+                                <td colspan="4">Итого по направлению / Subtotal</td>
+                                <td class="nu-right">
+                                    <span t-esc="group['revenue']"
+                                          t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+            </t>
+            <div t-else="" class="nu-empty">Сделки не зарегистрированы / No opportunities on record.</div>
+
+            <!-- ============ PROJECTS & TASKS ============ -->
+            <div class="nu-sec">Проекты и задачи / Projects and tasks</div>
+            <t t-if="data['project_groups']">
+                <t t-foreach="data['project_groups']" t-as="pgroup">
+                    <div class="nu-sub-sec">
+                        <span t-field="pgroup['project'].name"/>
+                        <span class="nu-muted" style="font-weight: 400;">
+                            — <t t-esc="pgroup['task_count']"/> задач(и) / task(s)
+                        </span>
+                        <span t-if="pgroup['project'].user_id" class="nu-muted" style="font-weight: 400;">
+                            · Руководитель / Manager: <span t-field="pgroup['project'].user_id.name"/>
+                        </span>
+                    </div>
+                    <table class="nu-tbl">
+                        <thead>
+                            <tr>
+                                <th style="width: 46%;">Задача / Task</th>
+                                <th style="width: 20%;">Этап / Stage</th>
+                                <th style="width: 20%;">Исполнитель / Assignee</th>
+                                <th style="width: 14%;">Срок / Deadline</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="pgroup['tasks']" t-as="task">
+                                <tr>
+                                    <td><span t-field="task.name"/></td>
+                                    <td><span t-field="task.stage_id.name"/></td>
+                                    <td>
+                                        <t t-foreach="task.user_ids" t-as="assignee">
+                                            <span t-field="assignee.name"/><br/>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <span t-if="task.date_deadline"
+                                              t-field="task.date_deadline"
+                                              t-options='{"widget": "date", "format": "dd.MM.yyyy"}'/>
+                                    </td>
+                                </tr>
+                                <tr t-foreach="task.child_ids" t-as="sub">
+                                    <td class="nu-sub-task">
+                                        &#8226; <span t-field="sub.name"/>
+                                    </td>
+                                    <td class="nu-sub-task"><span t-field="sub.stage_id.name"/></td>
+                                    <td class="nu-sub-task">
+                                        <t t-foreach="sub.user_ids" t-as="subassignee">
+                                            <span t-field="subassignee.name"/><br/>
+                                        </t>
+                                    </td>
+                                    <td class="nu-sub-task">
+                                        <span t-if="sub.date_deadline"
+                                              t-field="sub.date_deadline"
+                                              t-options='{"widget": "date", "format": "dd.MM.yyyy"}'/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+            </t>
+            <div t-else="" class="nu-empty">Проекты не зарегистрированы / No projects on record.</div>
+
+            <!-- ============ MEETINGS ============ -->
+            <div class="nu-sec">Встречи и визиты / Meetings and visits</div>
+            <table class="nu-tbl" t-if="data['events']">
+                <thead>
+                    <tr>
+                        <th style="width: 58%;">Мероприятие / Event</th>
+                        <th style="width: 22%;">Дата / Date</th>
+                        <th style="width: 20%;">Участники / Attendees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="data['events']" t-as="event">
+                        <td><span t-field="event.name"/></td>
+                        <td><span t-field="event.start" t-options='{"widget": "datetime", "format": "dd.MM.yyyy HH:mm"}'/></td>
+                        <td class="nu-muted"><t t-esc="len(event.partner_ids)"/></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div t-else="" class="nu-empty">Встречи не зарегистрированы / No meetings on record.</div>
+
+        </div>
+    </t>
+</template>
+
+<template id="report_partner_cooperation">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="nu_partner_report.report_partner_cooperation_document"/>
+        </t>
+    </t>
+</template>
+
+</odoo>

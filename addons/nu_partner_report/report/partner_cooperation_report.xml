@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_cooperation_report" model="report.paperformat">
+        <field name="name">NU Cooperation Report (A4)</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">28</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">18</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_partner_cooperation" model="ir.actions.report">
+        <field name="name">Cooperation Report</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nu_partner_report.report_partner_cooperation</field>
+        <field name="report_file">nu_partner_report.report_partner_cooperation</field>
+        <field name="paperformat_id" ref="paperformat_cooperation_report"/>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Cooperation Report - %s' % (object.name or '')</field>
+    </record>
+
+</odoo>
