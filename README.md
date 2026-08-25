@@ -101,8 +101,13 @@ continuation of this one. To actually hand off the current running state:
    cd nu_demo
    cp .env.example .env                           # own values are fine
    cp config/odoo.conf.example config/odoo.conf    # own admin_passwd is fine
-   docker compose up -d
+   docker compose up -d db odoo
    ```
+   Note `db odoo` rather than a bare `up -d`: the `nginx` service needs a TLS
+   certificate, and `nginx/certs/` is gitignored, so on a fresh clone nginx has
+   nothing to serve and would sit in a restart loop. It is only needed for HTTPS
+   on a real deployment -- a local demo talks to Odoo directly on port 8069.
+
    Wait until `docker compose ps` shows db + odoo running, then restore the
    snapshot with the bundled script (put both handoff files in `backups/` first):
    ```
