@@ -8,9 +8,9 @@
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="before">
                 <header>
-                    <button name="action_print_cooperation_report"
+                    <button name="action_open_cooperation_report_wizard"
                             type="object"
-                            string="Отчёт о сотрудничестве"
+                            string="Cooperation Report"
                             class="btn-primary"
                             icon="fa-file-pdf-o"/>
                 </header>

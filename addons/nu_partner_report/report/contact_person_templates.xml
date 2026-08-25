@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="report_contact_person_document">
+    <t t-set="data" t-value="doc.get_contact_report_data()"/>
+    <t t-set="person" t-value="data['person']"/>
+    <t t-set="org" t-value="data['company_partner']"/>
+    <t t-set="cdata" t-value="data['company_data']"/>
+    <t t-set="currency" t-value="data['currency']"/>
+    <t t-set="company" t-value="data['company']"/>
+
+    <t t-call="web.external_layout">
+        <div class="page">
+            <style>
+                .nu-h1 { font-size: 20px; font-weight: 700; color: #1b2a4a; margin: 0; }
+                .nu-sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
+                .nu-sec { font-size: 13px; font-weight: 700; color: #1b2a4a;
+                          border-bottom: 2px solid #1b2a4a; padding-bottom: 3px;
+                          margin: 18px 0 8px 0; text-transform: uppercase;
+                          letter-spacing: .4px; }
+                .nu-tbl { width: 100%; border-collapse: collapse; font-size: 9.5px; }
+                .nu-tbl th { background: #eef1f6; color: #1b2a4a; font-weight: 700;
+                             text-align: left; padding: 5px 6px;
+                             border-bottom: 1px solid #c9d2e0; }
+                .nu-tbl td { padding: 5px 6px; border-bottom: 1px solid #eceff3;
+                             vertical-align: top; }
+                .nu-chip { display: inline-block; background: #eef1f6; color: #26456e;
+                           border-radius: 9px; padding: 1px 8px; font-size: 8.5px;
+                           margin: 0 3px 3px 0; }
+                .nu-kpi { border: 1px solid #dfe3e8; border-radius: 4px;
+                          padding: 8px 6px; text-align: center; }
+                .nu-kpi-val { font-size: 15px; font-weight: 700; color: #1b2a4a; }
+                .nu-kpi-lbl { font-size: 8.5px; color: #6b7280; text-transform: uppercase; }
+                .nu-muted { color: #6b7280; }
+                .nu-right { text-align: right; }
+                .nu-empty { font-size: 10px; color: #9aa3af; font-style: italic;
+                            padding: 4px 0; }
+                .nu-block { page-break-inside: avoid; break-inside: avoid; }
+            </style>
+
+            <!-- TITLE: the person, not their employer -->
+            <div class="row">
+                <div class="col-8">
+                    <p class="nu-h1"><span t-field="person.name"/></p>
+                    <p class="nu-sub">
+                        <span t-if="person.function"><span t-field="person.function"/> · </span>
+                        <span t-if="org" t-field="org.name"/>
+                    </p>
+                    <p class="nu-sub">Карточка контакта / Contact report</p>
+                </div>
+                <div class="col-4 nu-right">
+                    <p class="nu-sub" style="margin-top: 4px;">
+                        Дата формирования / Generated<br/>
+                        <strong t-esc="context_timestamp(datetime.datetime.now()).strftime('%d.%m.%Y %H:%M')"/>
+                    </p>
+                </div>
+            </div>
+
+            <!-- CONTACT DETAILS -->
+            <div class="nu-sec">Контактные данные / Contact details</div>
+            <div class="row">
+                <div class="col-6">
+                    <table class="nu-tbl">
+                        <tr t-if="person.function">
+                            <td class="nu-muted" style="width: 38%;">Должность / Position</td>
+                            <td><span t-field="person.function"/></td>
+                        </tr>
+                        <tr t-if="person.email">
+                            <td class="nu-muted">Email</td>
+                            <td><span t-field="person.email"/></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-6">
+                    <table class="nu-tbl">
+                        <tr t-if="person.phone">
+                            <td class="nu-muted" style="width: 38%;">Телефон / Phone</td>
+                            <td><span t-field="person.phone"/></td>
+                        </tr>
+                        <tr t-if="person.parent_id">
+                            <td class="nu-muted">Компания / Company</td>
+                            <td><span t-field="person.parent_id.name"/></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- WHERE THEY WORK — the "what company is this person with" question -->
+            <div class="nu-sec">Организация / Organisation</div>
+            <t t-if="org">
+                <div class="nu-block">
+                    <table class="nu-tbl">
+                        <tr>
+                            <td class="nu-muted" style="width: 22%;">Компания / Company</td>
+                            <td><strong t-field="org.name"/></td>
+                            <td class="nu-muted" style="width: 18%;">Страна / Country</td>
+                            <td><span t-field="org.country_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td class="nu-muted">Город / City</td>
+                            <td><span t-field="org.city"/></td>
+                            <td class="nu-muted">Сайт / Website</td>
+                            <td><span t-field="org.website"/></td>
+                        </tr>
+                    </table>
+
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-3"><div class="nu-kpi">
+                            <div class="nu-kpi-val" t-esc="len(cdata.get('opportunities', []))"/>
+                            <div class="nu-kpi-lbl">Сделок компании<br/>Company deals</div>
+                        </div></div>
+                        <div class="col-4"><div class="nu-kpi">
+                            <div class="nu-kpi-val">
+                                <span t-esc="cdata.get('total_revenue', 0)"
+                                      t-options='{"widget": "monetary", "display_currency": currency}'/>
+                            </div>
+                            <div class="nu-kpi-lbl">Общая сумма<br/>Total value</div>
+                        </div></div>
+                        <div class="col-2"><div class="nu-kpi">
+                            <div class="nu-kpi-val" t-esc="len(cdata.get('projects', []))"/>
+                            <div class="nu-kpi-lbl">Проектов<br/>Projects</div>
+                        </div></div>
+                        <div class="col-3"><div class="nu-kpi">
+                            <div class="nu-kpi-val" t-esc="len(data['colleagues'])"/>
+                            <div class="nu-kpi-lbl">Коллег в базе<br/>Colleagues</div>
+                        </div></div>
+                    </div>
+
+                    <div t-if="cdata.get('tags')" style="margin-top: 10px;">
+                        <span class="nu-muted" style="font-size: 9.5px;">Форматы взаимодействия / Cooperation formats:</span><br/>
+                        <t t-foreach="cdata['tags']" t-as="tag">
+                            <span class="nu-chip"><span t-field="tag.name"/></span>
+                        </t>
+                    </div>
+                </div>
+            </t>
+            <div t-else="" class="nu-empty">
+                Контакт не привязан к компании / This contact is not linked to a company.
+            </div>
+
+            <!-- THE COMPANY'S DEALS, so the person is shown in context -->
+            <t t-if="cdata.get('opportunity_groups')">
+                <div class="nu-block">
+                    <div class="nu-sec">Сотрудничество компании / Company cooperation</div>
+                    <table class="nu-tbl">
+                        <thead>
+                            <tr>
+                                <th style="width: 42%;">Наименование / Name</th>
+                                <th style="width: 20%;">Направление / Direction</th>
+                                <th style="width: 18%;">Этап / Stage</th>
+                                <th style="width: 20%;" class="nu-right">Сумма / Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="cdata['opportunities']" t-as="opp">
+                                <td><span t-field="opp.name"/></td>
+                                <td class="nu-muted"><span t-field="opp.team_id.name"/></td>
+                                <td><span t-field="opp.stage_id.name"/></td>
+                                <td class="nu-right">
+                                    <span t-esc="opp.expected_revenue"
+                                          t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+
+            <!-- PERSON-SPECIFIC: meetings they personally attended -->
+            <div class="nu-sec">Встречи с участием контакта / Meetings attended</div>
+            <table class="nu-tbl" t-if="data['own_events']">
+                <thead>
+                    <tr>
+                        <th style="width: 70%;">Мероприятие / Event</th>
+                        <th style="width: 30%;">Дата / Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="data['own_events']" t-as="ev">
+                        <td><span t-field="ev.name"/></td>
+                        <td><span t-field="ev.start"
+                                  t-options='{"widget": "datetime", "format": "dd.MM.yyyy HH:mm"}'/></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div t-else="" class="nu-empty">
+                Встречи с участием этого контакта не зарегистрированы /
+                No meetings recorded with this contact.
+            </div>
+
+            <!-- OTHER PEOPLE AT THE SAME COMPANY -->
+            <div class="nu-sec">Другие контакты компании / Other contacts</div>
+            <table class="nu-tbl" t-if="data['colleagues']">
+                <thead>
+                    <tr>
+                        <th style="width: 34%;">Имя / Name</th>
+                        <th style="width: 34%;">Должность / Position</th>
+                        <th style="width: 32%;">Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="data['colleagues']" t-as="c">
+                        <td><span t-field="c.name"/></td>
+                        <td><span t-field="c.function"/></td>
+                        <td><span t-field="c.email"/></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div t-else="" class="nu-empty">
+                Других контактов в этой компании нет / No other contacts on record.
+            </div>
+
+        </div>
+    </t>
+</template>
+
+</odoo>

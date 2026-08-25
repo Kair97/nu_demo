@@ -317,7 +317,12 @@
 <template id="report_partner_cooperation">
     <t t-call="web.html_container">
         <t t-foreach="docs" t-as="doc">
-            <t t-call="nu_partner_report.report_partner_cooperation_document"/>
+            <t t-if="doc._is_contact_person()">
+                <t t-call="nu_partner_report.report_contact_person_document"/>
+            </t>
+            <t t-else="">
+                <t t-call="nu_partner_report.report_partner_cooperation_document"/>
+            </t>
         </t>
     </t>
 </template>

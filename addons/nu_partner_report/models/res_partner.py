@@ -4,14 +4,19 @@ from odoo import models
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    def _cooperation_root(self):
-        """The company the report is really about.
+    def _is_contact_person(self):
+        """A named individual rather than an organisation."""
+        self.ensure_one()
+        return not self.is_company and bool(self.parent_id)
 
-        Printing from a child contact (a person) should still produce the
-        company-level report, since that is what people actually want to see.
+    def _cooperation_root(self):
+        """The organisation whose cooperation history we aggregate.
+
+        For a contact person that is the company they work for -- the deals and
+        projects are recorded against the organisation, not the individual.
         """
         self.ensure_one()
-        return self.parent_id if (self.parent_id and not self.is_company) else self
+        return self.parent_id if self._is_contact_person() else self
 
     def _cooperation_partner_ids(self):
         """Company + all its contact persons.
@@ -106,9 +111,50 @@ class ResPartner(models.Model):
             'company': self.env.company,
         }
 
-    def action_print_cooperation_report(self):
-        """Print button on the contact form."""
+    def get_contact_report_data(self):
+        """Report for an individual: who they are, plus the cooperation their
+        organisation has with NU.
+
+        Deals and projects are recorded against the organisation rather than the
+        individual, so a report limited strictly to records pointing at this one
+        person would be empty and useless. What is genuinely person-specific --
+        the meetings they personally attended and their own logged history -- is
+        separated out from the organisation-level summary.
+        """
         self.ensure_one()
-        return self.env.ref(
-            'nu_partner_report.action_report_partner_cooperation'
-        ).report_action(self._cooperation_root())
+        company = self._cooperation_root()
+
+        own_events = self.env['calendar.event'].search(
+            [('partner_ids', 'in', self.ids)], order='start desc',
+        )
+        own_messages = self.env['mail.message'].search([
+            ('model', '=', 'res.partner'),
+            ('res_id', '=', self.id),
+            ('message_type', '!=', 'notification'),
+        ], order='date desc', limit=15)
+
+        # Organisation-level context, reused from the company report.
+        company_data = company.get_cooperation_report_data() if company else {}
+
+        return {
+            'person': self,
+            'company_partner': company,
+            'colleagues': company.child_ids - self if company else self.browse(),
+            'own_events': own_events,
+            'own_messages': own_messages,
+            'company_data': company_data,
+            'currency': self.env.company.currency_id,
+            'company': self.env.company,
+        }
+
+    def action_open_cooperation_report_wizard(self):
+        """Open the download / email chooser for this partner."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Cooperation Report',
+            'res_model': 'nu.cooperation.report.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_partner_id': self.id},
+        }

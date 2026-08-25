@@ -1,13 +1,16 @@
 {
     'name': 'NU Partner Cooperation Report',
-    'version': '1.0',
+    'version': '2.0',
     'summary': 'One-click PDF report of everything NU does with a partner company',
     'category': 'Customer Relationship Management',
     'author': 'Nazarbayev University — Industry Engagement Office',
     'depends': ['base', 'contacts', 'crm', 'project', 'calendar'],
     'data': [
+        'security/ir.model.access.csv',
         'report/partner_cooperation_report.xml',
         'report/partner_cooperation_templates.xml',
+        'report/contact_person_templates.xml',
+        'wizard/cooperation_report_wizard_views.xml',
         'views/res_partner_views.xml',
     ],
     'installable': True,
