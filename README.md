@@ -95,24 +95,32 @@ continuation of this one. To actually hand off the current running state:
      git. ⚠️ The database dump contains the real Gmail app password (Odoo stores
      `ir.mail_server` credentials in the database, not encrypted at rest) — treat
      these files with the same care as any other credential.
-3. **Teammate's setup**, after installing Docker Desktop and cloning the repo:
+3. **Teammate's setup** — install Docker Desktop, then:
    ```
-   cp .env.example .env                            # can use fresh secrets, doesn't need to match yours
-   cp config/odoo.conf.example config/odoo.conf     # same — fresh admin_passwd is fine
+   git clone https://github.com/Kair97/nu_demo.git
+   cd nu_demo
+   cp .env.example .env                           # own values are fine
+   cp config/odoo.conf.example config/odoo.conf    # own admin_passwd is fine
    docker compose up -d
    ```
-   Wait for it to be healthy (`docker compose ps`), then restore your data into it:
+   Wait until `docker compose ps` shows db + odoo running, then restore the
+   snapshot with the bundled script (put both handoff files in `backups/` first):
    ```
-   docker compose cp backups/handoff_nu_demo_<timestamp>.dump db:/tmp/restore.dump
-   docker compose exec db pg_restore -U odoo -d postgres --create --clean /tmp/restore.dump
-
-   docker compose cp backups/handoff_filestore_nu_demo_<timestamp>.tar.gz odoo:/tmp/filestore.tar.gz
-   docker compose exec odoo sh -c "tar -xzf /tmp/filestore.tar.gz -C /var/lib/odoo/.local/share/Odoo"
-
-   docker compose restart odoo
+   ./scripts/restore_handoff.sh backups/handoff_nu_demo_<timestamp>.dump backups/handoff_filestore_nu_demo_<timestamp>.tar.gz
    ```
-4. **Login** once restored: `admin` / `NuDemo2026!` at `http://localhost:8069`
-   (their own machine now has the exact same data, config, and fixes as this one).
+   (On Windows run it from **Git Bash**, not PowerShell.)
+   The script stops Odoo, recreates the database, restores it, unpacks the
+   attachments and restarts — and refuses to continue if the dump did not
+   actually reach the container or if too few tables came back, so a failed
+   restore cannot be mistaken for a working one.
+
+4. **Login** once restored, at <http://localhost:8069>:
+   - `admin` / `NuDemo2026!` — full administrator
+   - `staff@nu.edu.kz` / `NuDemo2026!` — ordinary employee, useful for showing
+     role differences (no Settings app, but full visibility of partners/deals)
+
+   `docs/REQUIREMENTS_MAP.md` walks through where each NU requirement is visible,
+   and ends with a suggested demo order.
 
 ## Deploying to the team's server
 
