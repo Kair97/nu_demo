@@ -41,6 +41,10 @@
                                    border-top: 1px solid #c9d2e0; }
                 .nu-empty { font-size: 10px; color: #9aa3af; font-style: italic;
                             padding: 4px 0; }
+                /* Keep a heading with the content it introduces, and never split a
+                   single direction/project block across a page boundary. */
+                .nu-sec, .nu-sub-sec { page-break-after: avoid; break-after: avoid; }
+                .nu-block { page-break-inside: avoid; break-inside: avoid; }
             </style>
 
             <!-- ============ TITLE ============ -->
@@ -166,9 +170,10 @@
             <div t-else="" class="nu-empty">Ответственные не назначены / No staff assigned yet.</div>
 
             <!-- ============ OPPORTUNITIES BY DIRECTION ============ -->
-            <div class="nu-sec">Проекты и сделки по направлениям / Cooperation by direction</div>
             <t t-if="data['opportunity_groups']">
                 <t t-foreach="data['opportunity_groups']" t-as="group">
+                  <div class="nu-block">
+                    <div t-if="group_index == 0" class="nu-sec">Проекты и сделки по направлениям / Cooperation by direction</div>
                     <div class="nu-sub-sec">
                         <span t-if="group['team']" t-field="group['team'].name"/>
                         <span t-else="">Без направления / Unassigned</span>
@@ -211,14 +216,19 @@
                             </tr>
                         </tbody>
                     </table>
+                  </div>
                 </t>
             </t>
-            <div t-else="" class="nu-empty">Сделки не зарегистрированы / No opportunities on record.</div>
+            <t t-else="">
+                <div class="nu-sec">Проекты и сделки по направлениям / Cooperation by direction</div>
+                <div class="nu-empty">Сделки не зарегистрированы / No opportunities on record.</div>
+            </t>
 
             <!-- ============ PROJECTS & TASKS ============ -->
-            <div class="nu-sec">Проекты и задачи / Projects and tasks</div>
             <t t-if="data['project_groups']">
                 <t t-foreach="data['project_groups']" t-as="pgroup">
+                  <div class="nu-block">
+                    <div t-if="pgroup_index == 0" class="nu-sec">Проекты и задачи / Projects and tasks</div>
                     <div class="nu-sub-sec">
                         <span t-field="pgroup['project'].name"/>
                         <span class="nu-muted" style="font-weight: 400;">
@@ -272,9 +282,13 @@
                             </t>
                         </tbody>
                     </table>
+                  </div>
                 </t>
             </t>
-            <div t-else="" class="nu-empty">Проекты не зарегистрированы / No projects on record.</div>
+            <t t-else="">
+                <div class="nu-sec">Проекты и задачи / Projects and tasks</div>
+                <div class="nu-empty">Проекты не зарегистрированы / No projects on record.</div>
+            </t>
 
             <!-- ============ MEETINGS ============ -->
             <div class="nu-sec">Встречи и визиты / Meetings and visits</div>

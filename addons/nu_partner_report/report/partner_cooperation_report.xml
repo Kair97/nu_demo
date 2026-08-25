@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!--
+        Header-related values deliberately match Odoo's own base.paperformat_euro.
+        wkhtmltopdf draws the letterhead inside the top margin, so a margin_top or
+        header_spacing smaller than the letterhead's height makes the company
+        address bleed down over the report body. 52mm is what every stock Odoo
+        report uses and it clears the logo plus a multi-line address.
+    -->
     <record id="paperformat_cooperation_report" model="report.paperformat">
         <field name="name">NU Cooperation Report (A4)</field>
         <field name="default" eval="False"/>
         <field name="format">A4</field>
         <field name="orientation">Portrait</field>
-        <field name="margin_top">28</field>
-        <field name="margin_bottom">20</field>
-        <field name="margin_left">8</field>
-        <field name="margin_right">8</field>
+        <field name="margin_top">52</field>
+        <field name="margin_bottom">32</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
         <field name="header_line" eval="False"/>
-        <field name="header_spacing">18</field>
+        <field name="header_spacing">52</field>
+        <field name="css_margins" eval="True"/>
         <field name="dpi">90</field>
     </record>
 
