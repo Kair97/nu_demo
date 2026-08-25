@@ -3,7 +3,7 @@
     overflow: auto;
     display: flex;
     justify-content: center;
-    background: radial-gradient(circle at 50% 0%, #23263a 0%, #14151f 55%, #101019 100%);
+    background: linear-gradient(180deg, #1c1f2e 0%, #14151f 60%, #101019 100%);
     color: #fff;
 
     &_container {

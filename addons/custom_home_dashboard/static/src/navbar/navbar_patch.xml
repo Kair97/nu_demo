@@ -2,11 +2,11 @@
 <templates xml:space="preserve">
     <t t-inherit="web.NavBar" t-inherit-mode="extension">
         <xpath expr="//header[hasclass('o_navbar')]" position="attributes">
-            <attribute name="t-att-class">{ 'o_home_menu_active': hm.hasHomeMenu }</attribute>
+            <attribute name="t-att-class">{ 'o_home_menu_active': showingHomeMenu }</attribute>
         </xpath>
 
         <xpath expr="//nav[hasclass('o_main_navbar')]" position="attributes">
-            <attribute name="t-att-class">{ 'o_home_menu_active': hm.hasHomeMenu }</attribute>
+            <attribute name="t-att-class">{ 'o_home_menu_active': showingHomeMenu }</attribute>
         </xpath>
 
         <xpath expr="//t[@t-call='web.NavBar.AppsMenu']" position="replace">
@@ -14,7 +14,7 @@
                class="o_menu_toggle d-flex align-items-center px-2"
                title="Home Menu"
                t-on-click.prevent="() => this.homeMenu.toggle()">
-                <t t-if="env.isSmall or !currentApp or hm.hasHomeMenu">
+                <t t-if="env.isSmall or !currentApp or showingHomeMenu">
                     <i class="oi oi-apps o_menu_toggle_icon"/>
                 </t>
                 <t t-else="">
@@ -35,11 +35,11 @@
         <xpath expr="//DropdownItem[@t-esc='currentApp.name']" position="replace"/>
 
         <xpath expr="//div[hasclass('o_navbar_breadcrumbs')]" position="attributes">
-            <attribute name="t-if">!hm.hasHomeMenu</attribute>
+            <attribute name="t-if">!showingHomeMenu</attribute>
         </xpath>
 
         <xpath expr="//t[@t-if='currentAppSections.length']" position="attributes">
-            <attribute name="t-if">currentAppSections.length and !hm.hasHomeMenu</attribute>
+            <attribute name="t-if">currentAppSections.length and !showingHomeMenu</attribute>
         </xpath>
     </t>
 </templates>
